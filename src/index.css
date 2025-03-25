@@ -1,0 +1,231 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: 'Inter var', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  @apply bg-gradient-to-tr from-gray-50 via-white to-blue-50 text-gray-900 dark:bg-gradient-to-tr dark:from-dark-900 dark:via-dark-800 dark:to-primary-900/20 dark:text-gray-100;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+/* Custom scrollbar style */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-dark-700;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-300 dark:bg-primary-700;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-400 dark:bg-primary-600;
+}
+
+/* Glass effect */
+.glass-card {
+  @apply bg-white bg-opacity-90 dark:bg-dark-800/90;
+  @apply backdrop-blur-md backdrop-saturate-150;
+  @apply border border-white/20 dark:border-white/5;
+  @apply shadow-soft dark:shadow-primary-900/20;
+}
+
+.glass-effect {
+  @apply bg-gradient-glass dark:bg-dark-glass;
+  @apply backdrop-blur-md backdrop-saturate-150;
+  @apply border border-white/20 dark:border-white/5;
+  @apply shadow-soft;
+}
+
+/* Premium UI components */
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white;
+    @apply px-4 py-2 rounded-lg font-medium;
+    @apply transition-all duration-300 ease-in-out;
+    @apply shadow-md hover:shadow-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50;
+  }
+  
+  .btn-secondary {
+    @apply bg-white/80 hover:bg-white/90 text-gray-800 dark:bg-dark-600/90 dark:hover:bg-dark-500/90 dark:text-gray-100;
+    @apply border border-gray-200 dark:border-dark-500;
+    @apply px-4 py-2 rounded-lg font-medium;
+    @apply transition-all duration-300 ease-in-out;
+    @apply shadow-sm hover:shadow-md;
+    @apply focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-500 focus:ring-opacity-50;
+  }
+  
+  .premium-card {
+    @apply bg-white/90 dark:bg-dark-800/90 rounded-xl;
+    @apply shadow-card dark:shadow-lg;
+    @apply backdrop-blur-sm backdrop-saturate-150;
+    @apply border border-white/30 dark:border-white/5;
+    @apply transition-all duration-300 ease-in-out;
+    @apply hover:shadow-strong dark:hover:shadow-xl;
+  }
+  
+  .premium-header {
+    @apply bg-gradient-to-r from-primary-600 to-secondary-600 dark:from-primary-700 dark:to-secondary-700;
+    @apply text-white font-display font-semibold shadow-sm;
+  }
+  
+  .dashboard-grid {
+    @apply grid gap-6;
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+  
+  .widget-title {
+    @apply font-display font-medium text-lg text-gray-900 dark:text-white;
+    @apply flex items-center gap-2;
+  }
+
+  .neon-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .neon-glow::before {
+    content: '';
+    @apply absolute inset-0 rounded-xl;
+    @apply bg-gradient-to-r from-primary-400/30 via-transparent to-secondary-400/30;
+    @apply dark:from-primary-500/20 dark:via-transparent dark:to-secondary-500/20;
+    @apply blur-lg opacity-0;
+    @apply transition-opacity duration-500;
+    z-index: -1;
+  }
+
+  .neon-glow:hover::before {
+    @apply opacity-100;
+  }
+
+  .glow-text {
+    @apply transition-all duration-300;
+    text-shadow: 0 0 10px rgba(14, 165, 233, 0);
+  }
+
+  .glow-text:hover {
+    @apply text-primary-500 dark:text-primary-400;
+    text-shadow: 0 0 10px rgba(14, 165, 233, 0.4);
+  }
+
+  .data-label {
+    @apply text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400;
+  }
+
+  .data-value {
+    @apply text-lg font-semibold text-gray-900 dark:text-white;
+  }
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    rgba(255, 255, 255, 0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.dark .shimmer {
+  background: linear-gradient(90deg, 
+    rgba(0, 0, 0, 0) 0%, 
+    rgba(255, 255, 255, 0.15) 50%, 
+    rgba(0, 0, 0, 0) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Geometric accents for futuristic feel */
+.geometric-accent {
+  @apply absolute pointer-events-none;
+  background-image: radial-gradient(circle, rgba(14, 165, 233, 0.2) 10%, transparent 70%);
+}
+
+/* Futuristic grid patterns */
+.grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.dark .grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(14, 165, 233, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.07) 1px, transparent 1px);
+}
+
+/* Blurry orbs for futuristic background */
+.orb {
+  @apply absolute rounded-full blur-2xl opacity-30 dark:opacity-20 bg-gradient-to-r;
+  animation: float 20s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+  @apply from-primary-300 to-primary-400 dark:from-primary-700 dark:to-primary-800;
+}
+
+.orb-2 {
+  @apply from-secondary-300 to-secondary-400 dark:from-secondary-700 dark:to-secondary-800;
+}
+
+.orb-3 {
+  @apply from-primary-400 to-secondary-400 dark:from-primary-700 dark:to-secondary-700;
+}
+
+/* Floating effect for widgets */
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(5px, 10px);
+  }
+  50% {
+    transform: translate(-5px, 5px);
+  }
+  75% {
+    transform: translate(8px, -5px);
+  }
+} 

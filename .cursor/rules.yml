@@ -1,0 +1,227 @@
+# .cursor/rules.yml
+# Configuration file for API Integration Dashboard project
+# These rules must be consulted before any implementation
+
+rules:
+  # PERSISTENT RULE REMINDER
+  rule_reminder:
+    enabled: true
+    description: "Rules that must be reminded before ANY implementation"
+    details: >
+      ATTENTION: Before proceeding with ANY work, acknowledge these rules:
+      
+      1. NO MOCK DATA is allowed under any circumstances
+      2. NO FALLBACK MECHANISMS are permitted
+      3. PROPER ERROR HANDLING is mandatory for all API requests
+      4. ALL data must come from actual API calls
+      5. Complete the IMPLEMENTATION CHECKLIST for every feature
+  
+  # HIGHEST PRIORITY: NO MOCK DATA
+  mock_data_policy:
+    enabled: true
+    description: "CRITICAL: Absolute prohibition against any mock data usage"
+    details: >
+      MOCK DATA IS STRICTLY PROHIBITED in any form, context, or purpose including
+      for testing, demonstrations, placeholders, or workarounds. All data must come
+      from actual API requests to the specified public APIs.
+      
+      This includes but is not limited to:
+      - Creating literal mock data objects/arrays
+      - Using fake data libraries
+      - Creating "placeholder" solutions
+      - Implementing "temporary" fake data for testing
+      - Using hardcoded example responses
+      
+      When facing API integration issues:
+      1. ALWAYS use proper error handling with detailed messages
+      2. NEVER create mock data as a workaround
+      3. Focus on fixing the actual integration problem
+    
+    patterns:
+      - avoid: "const mockData"
+      - avoid: "const sampleData"
+      - avoid: "const dummyData"
+      - avoid: "const fakeData"
+      - avoid: "const testData"
+      - avoid: "const placeholderData"
+      - avoid: "const temporaryData"
+      - avoid: "const exampleData"
+      - avoid: "import faker"
+      - avoid: "require('faker')"
+      - avoid: "import { faker }"
+      - avoid: "// For testing purposes"
+      - avoid: "// Temporary solution"
+      - avoid: "// TODO: Replace with real data"
+      - avoid: "// Placeholder"
+      - avoid: "// Mock implementation"
+  
+  # SECOND HIGHEST PRIORITY: NO FALLBACK MECHANISMS
+  no_fallback_policy:
+    enabled: true
+    description: "CRITICAL: Strict prohibition against implementing fallback mechanisms"
+    details: >
+      NO FALLBACK MECHANISMS of any kind should be implemented in the code.
+      When the system encounters difficulties with API requests or data processing,
+      it must provide detailed error messages explaining what's not working,
+      not silently fall back to default behaviors or mock data.
+      
+      This includes but is not limited to:
+      - Default data fallbacks
+      - Silent failure catches
+      - Empty arrays as defaults
+      - Hardcoded values when API data isn't available
+      - Any solution that makes the code "work" without actual API data
+    
+    patterns:
+      - avoid: "// Fallback to default data"
+      - avoid: "// Using sample data as a fallback"
+      - avoid: "|| defaultData"
+      - avoid: "|| []"
+      - avoid: "|| {}"
+      - avoid: "|| null"
+      - avoid: "catch (error) { /* silent failure */ }"
+      - avoid: "catch (error) { return [] }"
+      - avoid: "catch (error) { return {} }"
+      - avoid: "catch (error) { // continue without data }"
+  
+  # PROPER ERROR HANDLING IS MANDATORY
+  error_handling:
+    enabled: true
+    description: "MANDATORY: Comprehensive error handling for all API requests"
+    details: >
+      Proper error handling is MANDATORY for all API requests, not optional.
+      
+      When encountering ANY difficulties with API data retrieval, processing, or
+      other challenges, you MUST:
+      
+      1. Provide detailed error messages that explain exactly what went wrong
+      2. Display appropriate error states in the UI
+      3. Implement loading states for all data fetching operations
+      4. Log detailed error information for debugging
+      
+      Error handling must be:
+      1. Explicit and visible (not silent)
+      2. Detailed and informative for users
+      3. Actionable where possible
+      4. Never hidden or suppressed
+    
+    patterns:
+      - prefer: "throw new Error('Detailed explanation of what went wrong')"
+      - prefer: "console.error('Clear description of the error', error)"
+      - prefer: "<ErrorDisplay message={error.message} />"
+      - avoid: "// Ignore errors"
+      - avoid: "catch (error) {}"
+      - avoid: "catch (error) { console.log('Error') }"
+  
+  # SOLUTION PRINCIPLES
+  solution_principles:
+    enabled: true
+    description: "Focus on solving real API integration problems"
+    details: >
+      When encountering issues with API integration:
+      1. Identify the specific integration problem
+      2. Suggest solutions that fix the actual integration
+      3. Use proper error handling when integration fails
+      4. DO NOT create mock data as a solution
+      5. DO NOT implement fallback mechanisms
+      6. DO NOT provide "working" solutions that bypass real API integration
+      
+      The measure of success is NOT making something appear to work quickly.
+      The measure of success is implementing proper API handling that works
+      with real data correctly and handles failures appropriately.
+  
+  # DATA STRUCTURE HANDLING
+  data_structure:
+    enabled: true
+    description: "Guidelines for handling API response data"
+    details: >
+      The system works with multiple API data sources:
+      - Financial data from Alpha Vantage and CoinGecko
+      - Weather data from OpenWeatherMap and Air Quality Platform
+      - News data from NewsAPI and COVID-19 API
+      
+      All code should properly type and handle these data structures.
+    
+    patterns:
+      - prefer: "interface APIResponse { /* proper structure */ }"
+      - prefer: "type StockData = { /* proper structure */ }"
+  
+  # API RATE LIMITING
+  api_rate_limiting:
+    enabled: true
+    description: "Handle API rate limits appropriately"
+    details: >
+      All integrated APIs have rate limits that must be respected:
+      
+      1. Implement appropriate caching mechanisms
+      2. Add request throttling where necessary
+      3. Handle rate limit errors gracefully
+      4. Display clear messages when rate limits are hit
+      5. Avoid excessive API calls through proper state management
+  
+  # TESTING REQUIREMENTS
+  testing_requirements:
+    enabled: true
+    description: "Test all API integration functionality thoroughly"
+    details: >
+      For each API integration component:
+      
+      1. Test successful data retrieval and display
+      2. Test error states and error message display
+      3. Test loading states
+      4. Test responsive behavior on different screen sizes
+      5. Test proper handling of API rate limits
+  
+  # RESPONSIVE DESIGN
+  responsive_design:
+    enabled: true
+    description: "Ensure all components are fully responsive"
+    details: >
+      All dashboard components must:
+      
+      1. Be usable on mobile devices (320px minimum width)
+      2. Adapt appropriately to tablet and desktop views
+      3. Maintain readability of data visualizations at all sizes
+      4. Optimize interactions for both touch and mouse input
+  
+  # IMPLEMENTATION CHECKLIST
+  implementation_checklist:
+    enabled: true
+    description: "Complete this checklist for every implemented feature"
+    details: >
+      Before considering any feature complete, confirm:
+      
+      1. "This feature uses ONLY real data from the specified APIs"
+      2. "This feature implements proper error handling for ALL edge cases"
+      3. "This feature includes NO fallback mechanisms of any kind"
+      4. "This feature is fully responsive on all screen sizes"
+      5. "This feature handles API rate limits appropriately"
+      6. "This feature adheres to ALL project rules"
+  
+  # FOLLOW USER INTENT
+  follow_user_intent:
+    enabled: true
+    description: "Follow user instructions precisely"
+    details: >
+      Always follow user instructions precisely and avoid making changes
+      that weren't specifically requested.
+  
+  # GET APPROVAL FOR COMMANDS
+  approval_for_commands:
+    enabled: true
+    description: "Get approval before running any terminal commands"
+    details: >
+      Always get explicit confirmation from the user before executing
+      any terminal commands that could modify the system.
+  
+  # CLEAR ERROR MESSAGING
+  clear_error_messaging:
+    enabled: true
+    description: "Provide clear error explanations to users"
+    details: >
+      When errors occur in the application:
+      
+      1. Display user-friendly error messages
+      2. Provide guidance on potential solutions where applicable
+      3. Never show raw error objects to users
+      4. Log detailed errors for debugging purposes 
