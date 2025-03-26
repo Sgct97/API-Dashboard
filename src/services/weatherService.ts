@@ -35,6 +35,10 @@ export interface Coordinates {
 export const getOpenWeatherApiKey = (): string => {
   const apiKey = getEnvVariable('VITE_OPENWEATHER_API_KEY');
   
+  // Debug logging
+  console.log('OpenWeather API Key exists:', !!apiKey);
+  console.log('API Key length:', apiKey ? apiKey.length : 0);
+  
   if (apiKey === 'b6907d289e10d714a6e88b30761fae22') {
     throw new Error(
       'You are using the sample OpenWeatherMap API key from their documentation. ' +
@@ -96,12 +100,29 @@ export const getWeatherByCity = async (city: string, unit: 'metric' | 'imperial'
 export const getWeatherByCoords = async (coordinates: Coordinates, unit: 'metric' | 'imperial' = 'metric'): Promise<WeatherData> => {
   const apiKey = getOpenWeatherApiKey();
   
+  console.log('Making weather API request with coordinates:', coordinates);
+  
   if (!apiKey) {
     throw new Error('OpenWeather API key is missing. Please check your environment variables.');
   }
   
   try {
+    // Test direct fetch to check for CORS or other network issues
+    try {
+      console.log('Testing direct fetch to OpenWeatherMap API...');
+      const testUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${coordinates.lat}&lon=${coordinates.lon}&units=${unit}&appid=${apiKey}`;
+      const testResponse = await fetch(testUrl);
+      console.log('Direct fetch test response status:', testResponse.status);
+      if (!testResponse.ok) {
+        const errorText = await testResponse.text();
+        console.error('API error response:', errorText);
+      }
+    } catch (testError) {
+      console.error('Direct fetch test failed:', testError);
+    }
+    
     // Get current weather
+    console.log('Requesting current weather data...');
     const currentWeather = await apiRequest<any>(
       'https://api.openweathermap.org/data/2.5/weather',
       {
@@ -114,7 +135,10 @@ export const getWeatherByCoords = async (coordinates: Coordinates, unit: 'metric
       }
     );
     
+    console.log('Current weather data received:', !!currentWeather);
+    
     // Get forecast
+    console.log('Requesting forecast data...');
     const forecast = await apiRequest<any>(
       'https://api.openweathermap.org/data/2.5/forecast',
       {
@@ -127,8 +151,109 @@ export const getWeatherByCoords = async (coordinates: Coordinates, unit: 'metric
       }
     );
     
+    console.log('Forecast data received:', !!forecast);
+    
     return formatWeatherData(currentWeather, forecast);
   } catch (error) {
+    console.error('Weather API request failed:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get current weather by coordinates using direct fetch (no axios)
+ * This is used as a fallback if the axios request fails
+ */
+export const getWeatherByCoordsDirect = async (coordinates: Coordinates, unit: 'metric' | 'imperial' = 'metric'): Promise<WeatherData | null> => {
+  const apiKey = getOpenWeatherApiKey();
+  
+  console.log('Attempting direct fetch to OpenWeatherMap API...');
+  
+  if (!apiKey) {
+    throw new Error('OpenWeather API key is missing. Please check your environment variables.');
+  }
+  
+  try {
+    // Fetch current weather
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${coordinates.lat}&lon=${coordinates.lon}&units=${unit}&appid=${apiKey}`;
+    console.log('Weather URL:', weatherUrl);
+    
+    const weatherResponse = await fetch(weatherUrl);
+    if (!weatherResponse.ok) {
+      const errorText = await weatherResponse.text();
+      console.error('Weather fetch error:', errorText);
+      throw new Error(`Weather API error: ${weatherResponse.status} - ${errorText}`);
+    }
+    
+    const currentWeather = await weatherResponse.json();
+    console.log('Weather data received directly:', !!currentWeather);
+    
+    // Fetch forecast
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${coordinates.lat}&lon=${coordinates.lon}&units=${unit}&appid=${apiKey}`;
+    const forecastResponse = await fetch(forecastUrl);
+    
+    if (!forecastResponse.ok) {
+      const errorText = await forecastResponse.text();
+      console.error('Forecast fetch error:', errorText);
+      throw new Error(`Forecast API error: ${forecastResponse.status} - ${errorText}`);
+    }
+    
+    const forecast = await forecastResponse.json();
+    console.log('Forecast data received directly:', !!forecast);
+    
+    // Parse and format the data
+    return formatWeatherData(currentWeather, forecast);
+  } catch (error) {
+    console.error('Direct fetch to OpenWeatherMap failed:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get current weather by city name using direct fetch (no axios)
+ * This is used as a fallback if the axios request fails
+ */
+export const getWeatherByCityDirect = async (city: string, unit: 'metric' | 'imperial' = 'metric'): Promise<WeatherData | null> => {
+  const apiKey = getOpenWeatherApiKey();
+  
+  console.log('Attempting direct fetch to OpenWeatherMap API for city:', city);
+  
+  if (!apiKey) {
+    throw new Error('OpenWeather API key is missing. Please check your environment variables.');
+  }
+  
+  try {
+    // Fetch current weather
+    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=${unit}&appid=${apiKey}`;
+    console.log('Weather URL:', weatherUrl);
+    
+    const weatherResponse = await fetch(weatherUrl);
+    if (!weatherResponse.ok) {
+      const errorText = await weatherResponse.text();
+      console.error('Weather fetch error:', errorText);
+      throw new Error(`Weather API error: ${weatherResponse.status} - ${errorText}`);
+    }
+    
+    const currentWeather = await weatherResponse.json();
+    console.log('Weather data received directly:', !!currentWeather);
+    
+    // Fetch forecast
+    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(city)}&units=${unit}&appid=${apiKey}`;
+    const forecastResponse = await fetch(forecastUrl);
+    
+    if (!forecastResponse.ok) {
+      const errorText = await forecastResponse.text();
+      console.error('Forecast fetch error:', errorText);
+      throw new Error(`Forecast API error: ${forecastResponse.status} - ${errorText}`);
+    }
+    
+    const forecast = await forecastResponse.json();
+    console.log('Forecast data received directly:', !!forecast);
+    
+    // Parse and format the data
+    return formatWeatherData(currentWeather, forecast);
+  } catch (error) {
+    console.error('Direct fetch to OpenWeatherMap failed:', error);
     throw error;
   }
 };

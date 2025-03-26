@@ -3,6 +3,8 @@ import { ThemeProvider } from './context/ThemeContext';
 import Header from './components/layout/Header';
 import Dashboard from './components/layout/Dashboard';
 
+// Force app refresh to debug weather API
+
 function App() {
   return (
     <ThemeProvider>

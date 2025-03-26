@@ -3,7 +3,9 @@ import {
   WeatherData, 
   Coordinates, 
   getWeatherByCity, 
-  getWeatherByCoords 
+  getWeatherByCoords,
+  getWeatherByCoordsDirect,
+  getWeatherByCityDirect
 } from '../../../services/weatherService';
 
 const WeatherWidget = () => {
@@ -26,7 +28,6 @@ const WeatherWidget = () => {
           });
         },
         err => {
-          console.error('Geolocation error:', err);
           setError('Unable to get your location. Please search for a city manually.');
           setIsLoading(false);
         },
@@ -65,7 +66,20 @@ const WeatherWidget = () => {
     setError(null);
     
     try {
-      const data = await getWeatherByCity(city, unit);
+      let data: WeatherData | null = null;
+      
+      try {
+        // Try with axios implementation first
+        data = await getWeatherByCity(city, unit);
+      } catch (axiosError) {
+        // If axios fails, try with direct fetch
+        data = await getWeatherByCityDirect(city, unit);
+      }
+      
+      if (!data) {
+        throw new Error('Failed to fetch weather data via both methods');
+      }
+      
       setWeatherData(data);
       setLocation(city);
     } catch (err) {
@@ -74,8 +88,6 @@ const WeatherWidget = () => {
       } else {
         setError('An unknown error occurred while fetching weather data');
       }
-      
-      console.error('Weather fetch error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -87,7 +99,20 @@ const WeatherWidget = () => {
     setError(null);
     
     try {
-      const data = await getWeatherByCoords(coords, unit);
+      let data: WeatherData | null = null;
+      
+      try {
+        // Try with axios implementation first
+        data = await getWeatherByCoords(coords, unit);
+      } catch (axiosError) {
+        // If axios fails, try with direct fetch
+        data = await getWeatherByCoordsDirect(coords, unit);
+      }
+      
+      if (!data) {
+        throw new Error('Failed to fetch weather data via both methods');
+      }
+      
       setWeatherData(data);
       setLocation(data.location);
     } catch (err) {
@@ -96,8 +121,6 @@ const WeatherWidget = () => {
       } else {
         setError('An unknown error occurred while fetching weather data');
       }
-      
-      console.error('Weather fetch error:', err);
     } finally {
       setIsLoading(false);
     }
@@ -116,6 +139,7 @@ const WeatherWidget = () => {
   
   // Handle unit change
   const handleUnitChange = () => {
+    // Toggle the unit from metric to imperial or vice versa
     const newUnit = unit === 'metric' ? 'imperial' : 'metric';
     setUnit(newUnit);
     
@@ -131,7 +155,8 @@ const WeatherWidget = () => {
   
   // Format temperature with unit
   const formatTemp = (temp: number) => {
-    return `${Math.round(temp)}°${unit === 'metric' ? 'C' : 'F'}`;
+    // Display correct unit symbol based on the current unit setting
+    return `${Math.round(temp)}°${unit === 'imperial' ? 'C' : 'F'}`;
   };
   
   // Format timestamp to time
@@ -167,7 +192,7 @@ const WeatherWidget = () => {
             onClick={handleUnitChange}
             className="px-2 py-1 text-xs font-medium rounded-md bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
           >
-            {unit === 'metric' ? 'Celsius °C' : 'Fahrenheit °F'}
+            {unit === 'imperial' ? 'Celsius °C' : 'Fahrenheit °F'}
           </button>
         </div>
         
@@ -233,7 +258,7 @@ const WeatherWidget = () => {
                   </div>
                   <div className="flex items-center mb-1">
                     <span className="w-24 text-sm text-gray-500 dark:text-gray-400">Wind:</span>
-                    <span>{weatherData.windSpeed} {unit === 'metric' ? 'm/s' : 'mph'}</span>
+                    <span>{weatherData.windSpeed} {unit === 'imperial' ? 'm/s' : 'mph'}</span>
                   </div>
                   <div className="flex items-center">
                     <span className="w-24 text-sm text-gray-500 dark:text-gray-400">Pressure:</span>

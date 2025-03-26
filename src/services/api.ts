@@ -38,13 +38,20 @@ export const apiRequest = async <T>(
 ): Promise<T> => {
   const cacheKey = getCacheKey(url, options.params);
   
+  console.log(`API Request to: ${url}`);
+  console.log('Request params:', options.params);
+  
   // Return cached data if valid
   if (isCacheValid(cacheKey, cacheDuration)) {
+    console.log('Using cached data for:', url);
     return cache[cacheKey]?.data as T;
   }
   
   try {
+    console.log('Making fresh request to:', url);
     const response: AxiosResponse<T> = await axios({ url, ...options });
+    
+    console.log('Response status:', response.status);
     
     // Cache the response
     cache[cacheKey] = {
@@ -54,7 +61,8 @@ export const apiRequest = async <T>(
     
     return response.data;
   } catch (error) {
-    handleApiError(error as AxiosError);
+    console.log('Request failed for:', url);
+    handleApiError(error as AxiosError, url);
     throw error;
   }
 };
@@ -62,14 +70,30 @@ export const apiRequest = async <T>(
 /**
  * Handle API errors consistently
  */
-export const handleApiError = (error: AxiosError): void => {
+export const handleApiError = (error: AxiosError, url?: string): void => {
   if (error.response) {
     // The request was made and the server responded with a status code
     console.error('API Error Response:', {
+      url: url || error.config?.url,
       status: error.response.status,
       statusText: error.response.statusText,
       data: error.response.data
     });
+    
+    // Special handling for OpenWeatherMap API errors
+    if (url?.includes('openweathermap.org')) {
+      console.error('OpenWeatherMap API Error:', error.response.data);
+      
+      // Add specific error messages for OpenWeatherMap error codes
+      if (error.response.status === 401) {
+        console.error('⚠️ OpenWeatherMap API key is invalid or has not been activated yet.');
+        console.error('⚠️ Note that it can take up to 2 hours for a new API key to become active.');
+      } else if (error.response.status === 404) {
+        console.error('⚠️ City or location not found.');
+      } else if (error.response.status === 429) {
+        console.error('⚠️ API rate limit exceeded. Free accounts are limited to 60 calls per minute.');
+      }
+    }
     
     // Handle rate limiting errors specifically
     if (error.response.status === 429) {
@@ -77,7 +101,11 @@ export const handleApiError = (error: AxiosError): void => {
     }
   } else if (error.request) {
     // The request was made but no response was received
-    console.error('API No Response Error:', error.request);
+    console.error('API No Response Error:', {
+      url: url || error.config?.url,
+      request: error.request
+    });
+    console.error('⚠️ This could indicate a network issue, CORS problem, or service downtime.');
   } else {
     // Something happened in setting up the request
     console.error('API Request Setup Error:', error.message);
@@ -105,12 +133,15 @@ export const clearCacheItem = (url: string, params?: Record<string, any>): void 
  * Get environment variable with consistent error handling
  */
 export const getEnvVariable = (key: string): string => {
+  console.log(`Accessing environment variable: ${key}`);
   const value = import.meta.env[key];
   
   if (!value) {
-    console.error(`Environment variable ${key} is not set`);
+    console.error(`Environment variable ${key} is not set or is empty`);
+    console.log('Available env vars:', Object.keys(import.meta.env).join(', '));
     return '';
   }
   
+  console.log(`Found ${key} with length: ${value.length}`);
   return value;
 }; 

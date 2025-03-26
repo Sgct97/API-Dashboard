@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import WidgetContainer from '../widgets/WidgetContainer';
 import StockWidget from '../widgets/financial/StockWidget';
 import CryptoWidget from '../widgets/financial/CryptoWidget';
@@ -52,14 +52,10 @@ const Dashboard = () => {
 
   const activeWidgetsCount = Object.values(widgetVisibility).filter(Boolean).length;
 
-  // Find the widget info for a particular widget
-  const getWidgetInfo = (id: keyof WidgetVisibility) => {
-    return widgets.find(widget => widget.id === id) || widgets[0];
-  };
-
   return (
     <main className="flex-1 py-6 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
+        
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="relative">
@@ -72,14 +68,25 @@ const Dashboard = () => {
             
             <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
               {widgets.map((widget) => (
-                <WidgetToggle
+                <button
                   key={widget.id}
-                  name={widget.id}
-                  label={widget.title.split(' ')[0]}
-                  isVisible={widgetVisibility[widget.id]}
-                  toggle={toggleWidget}
-                  color={widget.color}
-                />
+                  onClick={() => toggleWidget(widget.id)}
+                  className={`
+                    px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
+                    flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-dark-800
+                    ${widgetVisibility[widget.id]
+                      ? `bg-gradient-to-r ${widget.color} bg-opacity-10 text-white shadow-sm backdrop-blur-sm` 
+                      : 'bg-white/80 text-gray-600 dark:bg-dark-700/80 dark:text-gray-400 hover:bg-white dark:hover:bg-dark-600/90 border border-gray-200/50 dark:border-white/5 backdrop-blur-sm focus:ring-gray-500'}
+                  `}
+                >
+                  <span className={`
+                    inline-block w-2 h-2 rounded-full transition-colors
+                    ${widgetVisibility[widget.id] 
+                      ? 'bg-white' 
+                      : 'bg-gray-400 dark:bg-gray-600'}
+                  `}></span>
+                  {widget.title.split(' ')[0]}
+                </button>
               ))}
             </div>
           </div>
@@ -125,7 +132,7 @@ const Dashboard = () => {
               <WidgetContainer 
                 title="Stock Market" 
                 icon="chart-bar" 
-                color={getWidgetInfo('stock').color}
+                color="from-blue-500 to-indigo-500"
               >
                 <StockWidget />
               </WidgetContainer>
@@ -135,7 +142,7 @@ const Dashboard = () => {
               <WidgetContainer 
                 title="Cryptocurrency" 
                 icon="currency-dollar" 
-                color={getWidgetInfo('crypto').color}
+                color="from-primary-500 to-secondary-500"
               >
                 <CryptoWidget />
               </WidgetContainer>
@@ -145,7 +152,7 @@ const Dashboard = () => {
               <WidgetContainer 
                 title="Weather Forecast" 
                 icon="cloud" 
-                color={getWidgetInfo('weather').color}
+                color="from-sky-400 to-blue-500"
               >
                 <WeatherWidget />
               </WidgetContainer>
@@ -155,7 +162,7 @@ const Dashboard = () => {
               <WidgetContainer 
                 title="Air Quality" 
                 icon="sparkles" 
-                color={getWidgetInfo('airQuality').color}
+                color="from-green-400 to-emerald-500"
               >
                 <AirQualityWidget />
               </WidgetContainer>
@@ -165,7 +172,7 @@ const Dashboard = () => {
               <WidgetContainer 
                 title="Latest News" 
                 icon="newspaper" 
-                color={getWidgetInfo('news').color}
+                color="from-amber-400 to-orange-500"
               >
                 <NewsWidget />
               </WidgetContainer>
@@ -175,7 +182,7 @@ const Dashboard = () => {
               <WidgetContainer 
                 title="COVID-19 Statistics" 
                 icon="chart-pie" 
-                color={getWidgetInfo('covid').color}
+                color="from-red-400 to-rose-500"
               >
                 <CovidWidget />
               </WidgetContainer>
@@ -184,37 +191,6 @@ const Dashboard = () => {
         )}
       </div>
     </main>
-  );
-};
-
-interface WidgetToggleProps {
-  name: keyof WidgetVisibility;
-  label: string;
-  isVisible: boolean;
-  toggle: (name: keyof WidgetVisibility) => void;
-  color: string;
-}
-
-const WidgetToggle: React.FC<WidgetToggleProps> = ({ name, label, isVisible, toggle, color }) => {
-  return (
-    <button
-      onClick={() => toggle(name)}
-      className={`
-        px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200
-        flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-dark-800
-        ${isVisible
-          ? `bg-gradient-to-r ${color} bg-opacity-10 text-white shadow-sm backdrop-blur-sm` 
-          : 'bg-white/80 text-gray-600 dark:bg-dark-700/80 dark:text-gray-400 hover:bg-white dark:hover:bg-dark-600/90 border border-gray-200/50 dark:border-white/5 backdrop-blur-sm focus:ring-gray-500'}
-      `}
-    >
-      <span className={`
-        inline-block w-2 h-2 rounded-full transition-colors
-        ${isVisible 
-          ? 'bg-white' 
-          : 'bg-gray-400 dark:bg-gray-600'}
-      `}></span>
-      {label}
-    </button>
   );
 };
 
